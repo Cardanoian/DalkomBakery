@@ -1,15 +1,17 @@
+import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import pandas as pd
 from tkinter import font
 from tkinter import filedialog
 import tkinter.messagebox as msg
-from datetime import date
-
+import json
 from funcs import read_process
 
 btn_width = 8
 orders = []
+with open("data.json") as f:
+    basic_data = json.load(f)
 
 
 def read_file():
@@ -31,10 +33,15 @@ def read_file():
 
 
 def save_file():
-    first = pd.DataFrame(orders)
-    print(first.loc[:, ["출처", "수신자", "상품명(수량)", "수령희망일"]])
+    if len(orders) == 0:
+        return
+    first = pd.DataFrame(orders).loc[:, ["출처", "수신자", "상품명(수량)", "수령희망일"]]
+    print(first)
     # print(df)
-    # df.to_excel(excel_writer="result.xlsx")
+    first.to_excel(excel_writer=f"{os.path.join(basic_data['file_path'], '1차.xlsx')}")
+    post = pd.DataFrame(orders).loc[:, ["수신자", "수신자우편번호", "수신자주소", "수신자전화번호", "수신자휴대전화", "전달글", "모델명", "상품명(수량)"]]
+    print(post)
+    post.to_excel(excel_writer=f"{os.path.join(basic_data['file_path'], '우체국.xlsx')}")
 
 
 def del_order():
@@ -49,11 +56,22 @@ def set_font(font_size):
     order_list.config(font=font.Font(size=font_size))
 
 
+def browse_path():
+    dir_path = filedialog.askdirectory(title="저장 위치", initialdir=None)
+    if dir_path == "":
+        return
+    file_path.delete(0, tk.END)
+    file_path.insert(0, dir_path)
+    basic_data["file_path"] = dir_path
+    with open("data.json", "w") as f:
+        json.dump(basic_data, f, indent=2)
+
+
 # Main Window
 
 window = tk.Tk()
 
-window.minsize(800, 600)
+window.minsize(800, 800)
 window.title("Dalkom Bakery")
 window.geometry("800x600+300+300")
 window.resizable(True, True)
@@ -113,10 +131,25 @@ label2 = tk.Label(complete_frame, text="Frame2")
 label2.pack()
 notebook.add(complete_frame, text="완료 주문")
 
+# Save Path Frame
+
+path_frame = tk.LabelFrame(window, text="파일 저장 위치")
+path_frame.pack(fill="x", padx=5, pady=5, ipady=5)
+
+file_path = tk.Entry(path_frame)
+file_path.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+
+if basic_data["file_path"]:
+    file_path.delete(0, tk.END)
+    file_path.insert(0, basic_data["file_path"])
+
+file_path_btn = tk.Button(path_frame, text="탐색", width=10, command=browse_path)
+file_path_btn.pack(side="right", padx=5, pady=5)
+
 # File Frame
 
 file_frame = tk.Frame(window)
-file_frame.pack(fill="x", padx=5, pady=5)
+file_frame.pack(fill="x", padx=5, pady=5, ipady=5)
 
 add_btn = tk.Button(
     file_frame, text="파일 열기", padx=5, pady=5, width=btn_width, command=read_file

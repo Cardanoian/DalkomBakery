@@ -49,7 +49,8 @@ def make_shop(file):
             deliver_date = ""
         order = f"{row['주문상품명'].strip()} ({str(row['주문품목 수량'])})"
         order_detail = {"출처": site, "수신자": name, "수신자우편번호": zip_code, "수신자주소": address,
-                        "수신자전화번호": home_phone, "수신자휴대전화": phone, "상품명(수량)": order, "수령희망일": deliver_date}
+                        "수신자전화번호": home_phone, "수신자휴대전화": phone, "상품명(수량)": order, "수령희망일": deliver_date,
+                        "전달글": "", "모델명": ""}
         result.append(order_detail)
     # print(result)
     return result
@@ -101,7 +102,8 @@ def naver_store(file):
 
         order = f"{row['상품명'].strip()} ({str(row['수량'])})"
         order_detail = {"출처": site, "수신자": name, "수신자우편번호": zip_code, "수신자주소": address,
-                        "수신자전화번호": home_phone, "수신자휴대전화": phone, "상품명(수량)": order, "수령희망일": deliver_date}
+                        "수신자전화번호": home_phone, "수신자휴대전화": phone, "상품명(수량)": order, "수령희망일": deliver_date,
+                        "전달글": "", "모델명": ""}
         result.append(order_detail)
     # print(result)
     return result
