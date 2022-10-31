@@ -28,7 +28,9 @@ def read_file():
             orders += read_process.naver_store(file)
     orders.sort(key=lambda x: x["수령희망일"])
     for row in orders:
-        order_str = f'{row["출처"]} {row["수신자"]}, 수령희망일: {row["수령희망일"] if row["수령희망일"] else ""}, {row["상품명(수량)"]}, 휴대전화: {row["수신자휴대전화"] if row["수신자휴대전화"] else ""}, 집전화: {row["수신자전화번호"] if row["수신자전화번호"] else ""}, 우편번호: {row["수신자우편번호"]}, 주소: {row["수신자주소"]}'
+        order_str = f'{row["출처"]:18s} {row["수신자"]:8s}, 수령희망일: {row["수령희망일"] if row["수령희망일"] else "":16s}, ' \
+                    f'{row["상품명(수량)"][:10]:10s}, 휴대전화: {row["수신자휴대전화"] if row["수신자휴대전화"] else "":18s}, ' \
+                    f'집전화: {row["수신자전화번호"] if row["수신자전화번호"] else "":18s}, 우편번호: {row["수신자우편번호"]:7s}, 주소: {row["수신자주소"]:10s}'
         order_list.insert(tk.END, order_str)
 
 
@@ -67,28 +69,35 @@ def browse_path():
         json.dump(basic_data, f, indent=2)
 
 
+def exit():
+    window.quit()
+    window.destroy()
+
+
 # Main Window
 
 window = tk.Tk()
 
 window.minsize(800, 800)
-window.title("Dalkom Bakery")
+window.title("Dalkom Bakery v0.1")
 window.geometry("800x600+300+300")
+window.iconphoto(True, tk.PhotoImage(file="dalkom.png"))
 window.resizable(True, True)
 
 # Menu Bar
 
 menubar = tk.Menu(window)
 filemenu = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label="File", menu=filemenu)
-filemenu.add_command(label="Open", command=read_file)
+menubar.add_cascade(label="파일", menu=filemenu)
+filemenu.add_command(label="저장", command=save_file)
+filemenu.add_command(label="열기", command=read_file)
 filemenu.add_separator()
 filemenu.add_command(label="주문 삭제", command=del_order)
 filemenu.add_separator()
-filemenu.add_command(label="Exit", command=window.quit)
+filemenu.add_command(label="종료", command=exit)
 
 fontmenu = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label="Font", menu=fontmenu)
+menubar.add_cascade(label="글자 크기", menu=fontmenu)
 fontmenu.add_command(label="12", command=lambda: set_font(12))
 fontmenu.add_command(label="14", command=lambda: set_font(14))
 fontmenu.add_command(label="16", command=lambda: set_font(16))
@@ -104,7 +113,7 @@ window.config(menu=menubar)
 notebook = ttk.Notebook(window, width=700, height=500)
 notebook.pack(fill="both", expand=1)
 
-order_frame = tk.Frame(window)
+order_frame = tk.Frame(window, width=700, height=500)
 
 y_scrollbar = tk.Scrollbar(order_frame)
 y_scrollbar.pack(side="right", fill="y")
@@ -126,10 +135,10 @@ notebook.add(order_frame, text="주문")
 
 # Complete Page
 
-complete_frame = tk.Frame(window)
-label2 = tk.Label(complete_frame, text="Frame2")
-label2.pack()
-notebook.add(complete_frame, text="완료 주문")
+# complete_frame = tk.Frame(window)
+# label2 = tk.Label(complete_frame, text="Frame2")
+# label2.pack()
+# notebook.add(complete_frame, text="완료 주문")
 
 # Save Path Frame
 
