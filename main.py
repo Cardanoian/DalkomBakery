@@ -26,18 +26,19 @@ def read_file():
             orders += read_process.make_shop(file)
         else:
             orders += read_process.naver_store(file)
-    orders.sort(key=lambda x: x["수령희망일"])
+    # orders.sort(key=lambda x: x["수령희망일"])
     for row in orders:
-        order_str = f'{row["출처"]:18s} {row["수신자"]:8s}, 수령희망일: {row["수령희망일"] if row["수령희망일"] else "":16s}, ' \
-                    f'{row["상품명(수량)"][:10]:10s}, 휴대전화: {row["수신자휴대전화"] if row["수신자휴대전화"] else "":18s}, ' \
-                    f'집전화: {row["수신자전화번호"] if row["수신자전화번호"] else "":18s}, 우편번호: {row["수신자우편번호"]:7s}, 주소: {row["수신자주소"]:10s}'
+        order_str = f'{row["출처"]:12s} {row["수신자"]:8s}, {row["상품명(수량)"][:10]:10s}, ' \
+                    f'휴대전화: {row["수신자휴대전화"] if row["수신자휴대전화"] else "":18s}, ' \
+                    f'집전화: {row["수신자전화번호"] if row["수신자전화번호"] else "":18s}, 우편번호: {row["수신자우편번호"]:7s}, ' \
+                    f'주소: {row["수신자주소"]:10s}, 상품옵션: {row["상품옵션"] if row["상품옵션"] else ""}'
         order_list.insert(tk.END, order_str)
 
 
 def save_file():
     if len(orders) == 0:
         return
-    first = pd.DataFrame(orders).loc[:, ["출처", "수신자", "상품명(수량)", "수령희망일"]]
+    first = pd.DataFrame(orders).loc[:, ["출처", "수신자", "상품명(수량)", "상품옵션"]]
     print(first)
     # print(df)
     first.to_excel(excel_writer=f"{os.path.join(basic_data['file_path'], '1차.xlsx')}")
